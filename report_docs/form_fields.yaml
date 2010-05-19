@@ -1,0 +1,33 @@
+# Input fields to be displayed in the form
+# Examples
+
+# text input [label, text]
+# spin control [label, spin, min, max, initial]
+# combo box [label, combo, [list of choices], default]		
+
+Demographics:
+  0: [Name, text]
+  1: [Age, spin, 1, 100, 35]
+  2: [Sex, combo, [Male,Female], Male]
+  3: [Date of Admission, text]
+  4: [Date of Procedure, text]
+  5: [IP Number, text]
+
+---
+ 
+Clinical:
+  0: [Presentation, text]
+  1: [ECG, text]
+  2: [ECG during tachycardia, text]
+  3: [Other investigations, text]
+  4: [Drugs, text]
+
+---
+
+Technical Details:
+  0: [Lab, combo, [EMS, SSB-1, SSB-2], EMS]
+  1: [EP System, combo, [Bard, Siemens Axiom Sensis, Cordis], Bard]
+  2: [Stimulator, combo, [Micropace 2, Micropace 3, Cordis], Micropace 2]
+  3: [Operator 1, combo, [Raja Selvaraj, Balachander J], Raja Selvaraj]
+  4: [Operator 2, combo, [Arunprasath, Babu, Geofi], Arunprasath]
+  5: [Comment, text]

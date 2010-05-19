@@ -11,6 +11,22 @@
 	return ''.join(['\n\t- ' + x for x in lst])	
 %>
 
+<%
+    def csv2bullet(csv):
+        """convert a line with comma separated values into
+	a bullet list"""
+	lst = csv.split(',')
+	return list2bullet(lst)
+%>
+
+<%
+    def csv2enum(csv):
+        """convert a line with comma separated values into
+	an eunumarated list"""
+	lst = csv.split(',')
+	return list2enum(lst)
+%>
+
 
 
 |jipmer|  Electrophysiology study and RF ablation
@@ -24,8 +40,8 @@ Jawaharlal Institute of Postgraduate Medical Education and Research
 
 .. csv-table:: Demographics
 
-          "**Name**", "${vals['patient_name']}", "**Age**", "${vals['patient_age']}", "**Sex**", "${vals['patient_sex']}"
-	  "**Date of Admission**", "${vals['admission_date']}", "**Hospital No.**", "${vals['hospital_number']}", "**IP No.**", "${vals['ip_number']}"
+          "**Name**", "${vals['Demographics_Name']}", "**Age**", "${vals['Demographics_Age']}", "**Sex**", "${vals['Demographics_Sex']}"
+	  "**Date of Admission**", "${vals['Demographics_Date of Admission']}", "**Date of Procedure**", "${vals['Demographics_Date of Procedure']}", "**IP No.**", "${vals['Demographics_IP Number']}"
 
 Summary
 '''''''
@@ -34,20 +50,21 @@ Summary
 .. csv-table:: Clinical
    :widths: 3, 10
 
-    "**Presentation**", "${vals['presentation']}"
-    "**ECG**", "${vals['ecg']}"
-    "**ECG during tachycardia**", "${vals['ecg_tachycardia']}"
-    "**Other investigations**", "${vals['other_investigations']}"
-    "**Drugs**", "${list2enum(vals['drugs'])}"
+    "**Presentation**", "${vals['Clinical_Presentation']}"
+    "**ECG**", "${vals['Clinical_ECG']}"
+    "**ECG during tachycardia**", "${vals['Clinical_ECG during tachycardia']}"
+    "**Other investigations**", "${vals['Clinical_Other investigations']}"
+    "**Drugs**", "${csv2enum(vals['Clinical_Drugs'])}"
 
 .. csv-table:: Technical details
    :widths: 3, 10
 
-    "**Lab**", "${vals['lab']}"
-    "**EP System**", "${vals['ep_system']}"
-    "**Stimulator**", "${vals['stimulator']}"
-    "**Operators**", "${list2bullet(vals['operators'])}"
-    "**Comment**", "${vals['technical_comment']}"
+    "**Lab**", "${vals['Technical_Lab']}"
+    "**EP System**", "${vals['Technical_EP System']}"
+    "**Stimulator**", "${vals['Technical_Stimulator']}"
+    "**Operators**", "${list2bullet([vals['Technical_Operator 1'],
+                                     vals['Technical_Operator 2']])}"
+    "**Comment**", "${vals['Technical_Comment']}"
 
 
 .. csv-table:: Access and catheters
