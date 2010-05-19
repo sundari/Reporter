@@ -7,7 +7,7 @@ import yaml
 
 class Form(wx.Frame):
     def __init__(self, parent, fields_file):
-        wx.Frame.__init__(self, parent, -1)
+        wx.Frame.__init__(self, parent, -1, size=(400, 800))
         self.panel = FormPanel(self, fields_file)
         self.Show(True)
 
@@ -27,7 +27,8 @@ class FormPanel(wx.Panel):
          # title at top
          # button at bottom
          # collpasible panes in between
-        self.title = wx.StaticText(self, label="Fill in the values")
+        self.title = wx.StaticText(self, label="EP Report")
+        self.title.SetFont(wx.Font(18, wx.SWISS, wx.NORMAL, wx.BOLD))
         
         # self.cp1 = wx.CollapsiblePane(self, label='Demographics',
         #                               style=wx.CP_DEFAULT_STYLE|wx.CP_NO_TLW_RESIZE)
@@ -36,7 +37,7 @@ class FormPanel(wx.Panel):
         self.construct_panes(fields_file)
         #self.make_pane_content(self.cp1.GetPane())
         
-        self.btn = wx.Button(self, label='Press me')
+        self.btn = wx.Button(self, label='Print report')
 
         self._layout()
 
@@ -54,11 +55,6 @@ class FormPanel(wx.Panel):
         sizer.Add(self.btn, 0, wx.ALL, 25)
 
         self.SetSizer(sizer)
-
-
-    def on_panechanged(self, event):
-        print 'laying out'
-        self.Layout()
 
     def construct_panes(self, fields_file):
        """Read the fields file and use the data to construct the
@@ -90,8 +86,7 @@ class Pane(wx.CollapsiblePane):
 
 
     def on_collapse_state_changed(self, event):
-        print 'state changed'
-        self.panel.on_panechanged(event)
+        #self.panel.on_panechanged(event)
         self.panel.Layout()
 
     def make_content(self):
@@ -131,9 +126,9 @@ class Pane(wx.CollapsiblePane):
                self.controls[-1].SetValue(control_data[3])
 
        # buttons
-       self.done_button = wx.Button(self.pane, -1, "Done")
-       self.dummy_button = wx.Button(self.pane, -1, "Dummy")
-       self.done_button.Bind(wx.EVT_BUTTON, self.on_done)
+       # self.done_button = wx.Button(self.pane, -1, "Done")
+       # self.dummy_button = wx.Button(self.pane, -1, "Dummy")
+       # self.done_button.Bind(wx.EVT_BUTTON, self.on_done)
 
        # make widget list - keep as loop so any additional steps can be added
        widget_list = []
@@ -141,26 +136,22 @@ class Pane(wx.CollapsiblePane):
            widget_list.append(l)
            widget_list.append((c, 1, wx.EXPAND))
 
-       widget_list += [(self.done_button, 0 ,wx.ALIGN_RIGHT|wx.ALIGN_CENTER_VERTICAL),
-                       (self.dummy_button, 0 ,wx.ALIGN_RIGHT|wx.ALIGN_CENTER_VERTICAL)]
+       # widget_list += [(self.done_button, 0 ,wx.ALIGN_RIGHT|wx.ALIGN_CENTER_VERTICAL),
+       #                 (self.dummy_button, 0 ,wx.ALIGN_RIGHT|wx.ALIGN_CENTER_VERTICAL)]
        return widget_list
 
     
     def make_layout(self, widget_list):
         """Put in the contents of the pane"""
-        # namelbl = wx.StaticText(pane, -1, "Name:")
-        # name = wx.TextCtrl(pane, -1, "")
-        # agelbl = wx.StaticText(pane, -1, "Age:")
-        # age = wx.TextCtrl(pane, -1, "")
-        
         fsizer = wx.FlexGridSizer(cols=2, hgap=5, vgap=5)
         fsizer.AddGrowableCol(1)
-        # fsizer.Add(namelbl, 0, wx.ALIGN_RIGHT|wx.ALIGN_CENTER_VERTICAL)
-        # fsizer.Add(name, 0, wx.EXPAND)
-        # fsizer.Add(agelbl, 0 , wx.ALIGN_RIGHT|wx.ALIGN_CENTER_VERTICAL)
-        # fsizer.Add(age, 0, wx.EXPAND)
         fsizer.AddMany(widget_list)
-        self.pane.SetSizer(fsizer)
+
+        # border
+        border = wx.BoxSizer(wx.HORIZONTAL)
+        border.Add(fsizer, 1, wx.EXPAND|wx.ALL, 10)
+        
+        self.pane.SetSizer(border)
 
     def on_done(self, event):
         self.get_values()
