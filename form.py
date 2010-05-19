@@ -10,7 +10,12 @@ class Form(wx.Frame):
         wx.Frame.__init__(self, parent, -1)
         self.panel = FormPanel(self, fields_file)
         self.Show(True)
-    
+
+    def collect_values(self):
+        """collect all the values from the different collapsible panels"""
+        self.vals = {}
+        for pane in self.panels.panes:
+            self.vals.update(pane.get_values())
 
 class FormPanel(wx.Panel):
     """A Frame  with several collapsible sections that contain
@@ -71,10 +76,10 @@ class Pane(wx.CollapsiblePane):
         a dictionary read from the yaml file"""
         self.panel = parent
         
-        self.label = pane_data.keys()[0]
-        self.pane_data = pane_data[self.label]
+        self.name = pane_data.keys()[0]
+        self.pane_data = pane_data[self.name]
 
-        wx.CollapsiblePane.__init__(self, parent, label=self.label,
+        wx.CollapsiblePane.__init__(self, parent, label=self.name,
                                     style=wx.CP_DEFAULT_STYLE|wx.CP_NO_TLW_RESIZE)
         widget_list =  self.make_content()
 
@@ -97,6 +102,7 @@ class Pane(wx.CollapsiblePane):
        Pane content that is constructed are a widgetlist to go into the
        sizer, list of labels and list of controls"""
        self.labels = []
+       self.control_labels = []
        self.controls = []
        self.pane = self.GetPane()
        
@@ -106,8 +112,11 @@ class Pane(wx.CollapsiblePane):
            label = control_data[0]
            control_type = control_data[1]
 
+           # keep a list of labels
+           self.labels.append(self.name + '_' + label)
+
            # statictext label
-           self.labels.append(wx.StaticText(self.pane, -1, label,
+           self.control_labels.append(wx.StaticText(self.pane, -1, label,
                                             style=wx.ALIGN_CENTER_VERTICAL))
 
            # control
@@ -128,11 +137,12 @@ class Pane(wx.CollapsiblePane):
 
        # make widget list - keep as loop so any additional steps can be added
        widget_list = []
-       for l, c in zip(self.labels, self.controls):
+       for l, c in zip(self.control_labels, self.controls):
            widget_list.append(l)
            widget_list.append((c, 1, wx.EXPAND))
 
-       #widget_list += [(self.done_button), (self.dummy_button)]
+       widget_list += [(self.done_button, 0 ,wx.ALIGN_RIGHT|wx.ALIGN_CENTER_VERTICAL),
+                       (self.dummy_button, 0 ,wx.ALIGN_RIGHT|wx.ALIGN_CENTER_VERTICAL)]
        return widget_list
 
     
@@ -153,7 +163,16 @@ class Pane(wx.CollapsiblePane):
         self.pane.SetSizer(fsizer)
 
     def on_done(self, event):
-        pass
+        self.get_values()
+
+    def get_values(self):
+        """Read all the values"""
+        vals = {}
+        for label, control in zip(self.labels, self.controls):
+            vals[label] = control.GetValue()
+
+        print vals
+            
         
 if __name__ == '__main__':
     app = wx.App()
