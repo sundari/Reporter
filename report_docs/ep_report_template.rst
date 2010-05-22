@@ -45,7 +45,7 @@ Jawaharlal Institute of Postgraduate Medical Education and Research
 
 Summary
 '''''''
-"${vals['Conclusions_Summary']}
+${vals['Conclusions_Summary']}
 
 .. csv-table:: Clinical
    :widths: 3, 10
@@ -100,7 +100,7 @@ Summary
          - AH jump - ${vals['Prog A Pace_AH jump']}
 	 - SPERP - ${vals['Prog A Pace_SPERP']} ms
 	 - FPERP - ${vals['Prog A Pace_FPERP']} ms
-	 - AERP - ${vals['Prog A Pace_AERP']}
+	 - AERP - ${vals['Prog A Pace_AERP']}"
 
 
 
@@ -147,22 +147,22 @@ Summary
    "**Incremental RV pace**", "${vals['Post Ablation_Incr V Pace']}"
     "**Programmed RV pace**", "${vals['Post Ablation_Prog V Pace']}"
     "**Incremental A pace**", "${vals['Post Ablation_Incr A Pace']}"
-    "**Programmed A pace**", "${vals['Post Ablation_Prog A Pace']}
+    "**Programmed A pace**", "${vals['Post Ablation_Prog A Pace']}"
 
 
 
 Conclusions
 '''''''''''
-"${list2bullet([vals['Conclusions_Conclusion 1'], vals['Conclusions_Conclusion 2'],
+${list2bullet([vals['Conclusions_Conclusion 1'], vals['Conclusions_Conclusion 2'],
                 vals['Conclusions_Conclusion 3'], vals['Conclusions_Conclusion 4']])}
 
 
 Recommendations
 '''''''''''''''
-"${list2bullet([vals['Recommendations_Recommendation 1'],
+${list2bullet([vals['Recommendations_Recommendation 1'],
                 vals['Recommendations_Recommendation 2'],
 		vals['Recommendations_Recommendation 3'],
-		vals['Recommendations_Recommendation 4']])}"
+		vals['Recommendations_Recommendation 4']])}
 
 
 

@@ -1,6 +1,29 @@
 #!/usr/bin/env python
 
-"""Present the form to the user and collect input"""
+"""
+Framework for creating reports using a template and user input.
+
+Template is a mako template with variables.
+A separate file lists the variables and the wx control
+required to get user input (see input_fields.yaml)
+
+The input fields file is loaded using yaml. Based on this,
+the controls are created and presented to the user. Once the user
+has entered the values, mako is used to render the template and create
+an rst document. This is converted to pdf using rst2pdf"""
+
+
+##
+# Author: Raja Selvaraj <rajajs@gmail.com>
+# License: GPL
+##
+
+# #ToDo:
+# 1. Collapse other panes when one pane is opened
+# 2. Bulleted or Enumerated lists must ignore empty items
+# 3. None at top of each pdf page
+# 4. Widget for multline text
+
 
 import wx
 import yaml
@@ -8,7 +31,7 @@ from mako.template import Template
 
 class Form(wx.Frame):
     def __init__(self, parent, fields_file):
-        wx.Frame.__init__(self, parent, -1, size=(400, 800))
+        wx.Frame.__init__(self, parent, -1, size=(600, 800))
         self.panel = FormPanel(self, fields_file)
 
         self.panel.print_button.Bind(wx.EVT_BUTTON, self.collect_values)
@@ -25,7 +48,10 @@ class Form(wx.Frame):
 
         report_template = Template(filename='report_docs/ep_report_template.rst')
         rep = report_template.render(vals = self.vals)
-        print rep
+        #print rep
+        reportfile = 'report_docs/report.rst'
+        with open(reportfile, 'w') as fi:
+            fi.write(rep)
 
 class FormPanel(wx.Panel):
     """A Frame  with several collapsible sections that contain
@@ -40,8 +66,6 @@ class FormPanel(wx.Panel):
         self.title = wx.StaticText(self, label="EP Report")
         self.title.SetFont(wx.Font(18, wx.SWISS, wx.NORMAL, wx.BOLD))
         
-        # self.cp1 = wx.CollapsiblePane(self, label='Demographics',
-        #                               style=wx.CP_DEFAULT_STYLE|wx.CP_NO_TLW_RESIZE)
         # Panes will be constructed from yaml file
         self.panes = []
         self.construct_panes(fields_file)
@@ -74,6 +98,14 @@ class FormPanel(wx.Panel):
            self.panes.append(Pane(self, pane_data))
        self.Layout()
 
+    def on_pane_changed(self, event):
+        """When a pane uncollapses, make sure other panes are collapsed"""
+        active_pane = event.EventObject
+        if not event.GetCollapsed():
+            for pane in self.panes:
+                pane.Collapse(pane != active_pane)
+                
+
 class Pane(wx.CollapsiblePane):
     """Individual collapsible pane which can construct the controls,
     build the pane and read the values out"""
@@ -96,7 +128,7 @@ class Pane(wx.CollapsiblePane):
 
 
     def on_collapse_state_changed(self, event):
-        #self.panel.on_panechanged(event)
+        self.panel.on_pane_changed(event)
         self.panel.Layout()
 
     def make_content(self):
