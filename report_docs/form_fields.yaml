@@ -24,10 +24,112 @@ Clinical:
 
 ---
 
-Technical Details:
+Technical:
   0: [Lab, combo, [EMS, SSB-1, SSB-2], EMS]
   1: [EP System, combo, [Bard, Siemens Axiom Sensis, Cordis], Bard]
   2: [Stimulator, combo, [Micropace 2, Micropace 3, Cordis], Micropace 2]
   3: [Operator 1, combo, [Raja Selvaraj, Balachander J], Raja Selvaraj]
   4: [Operator 2, combo, [Arunprasath, Babu, Geofi], Arunprasath]
   5: [Comment, text]
+  6: [Access 1, text]
+  7: [Access 2, text]
+  8: [Access 3, text]
+  9: [Access 4, text]
+  10: [Catheter 1, text]
+  11: [Catheter 2, text]
+  12: [Catheter 3, text]
+  13: [Catheter 4, text]
+  14: [Catheter 5, text]
+
+---
+
+Baseline:
+  0: [Rhythm, text]
+  1: [AH, text]
+  2: [HV, text]
+  3: [CL, text]
+
+---
+
+Incr V Pace:
+  0: [VA conduction, combo, [Non-decremental, Decremental], Non-Decremental]
+  1: [VAWB, text]
+  2: [Atrial Activation, combo, [Concentric, Eccentric], Concentric]
+
+---
+
+Prog V Pace:
+  0: [VA conduction, combo, [Non-decremental, Decremental], Non-Decremental]
+  1: [VAERP, text]
+  2: [Atrial Activation, combo, [Concentric, Eccentric], Concentric]
+  3: [VERP, text]
+
+---
+
+Incr A Pace:
+  0: [AVWB, text]
+  1: [Level of block, combo, [Nodal, Infranodal], Nodal]
+  2: [AH jump, combo, [Present, Absent], Absent]
+
+---
+
+Prog A Pace:
+  0: [AH jump, combo, [Present, Absent], Absent]
+  1: [SPERP, text]
+  2: [FPERP, text]
+  3: [AERP, text]
+
+---
+
+Tachycardia:
+  0: [Induction, text]
+  1: [QRS, combo, [Narrow, LBBB, RBBB], Narrow]
+  2: [CL, text]
+  3: [AH, text]
+  4: [HV, text]
+  5: [VA relationship, text]
+  6: [Atrial activation, combo, [Concentric, Eccentric], Concentric]
+  7: [RV overdrive, text]
+  8: [RV extra, text]
+  9: [RA overdrive, text]
+  10: [RA extra, text]
+  11: [Termination, text]
+  12: [Comment, text]
+
+---
+
+Ablation:
+  0: [Catheter, combo, [4 mm tip Webster Blue], 4 mm tip Webster Blue]
+  1: [Target, text]
+  2: [Settings, text]
+  3: [Time, spin , 0, 2000, 0]
+  4: [Endpoint, text]
+
+---
+
+Post Ablation:
+  0: [Rhythm, text]
+  1: [AH, text]
+  2: [HV, text]
+  3: [CL, text]
+  4: [Parahisian, text]
+  5: [Incr V Pace, text]
+  6: [Prog V Pace, text]
+  7: [Incr A Pace, text]
+  8: [Prog A Pace, text]
+
+---
+
+Conclusions:
+  0: [Conclusion 1, text]
+  1: [Conclusion 2, text]
+  2: [Conclusion 3, text]
+  3: [Conclusion 4, text]
+
+---
+
+Recommendations:
+  0: [Recommendation 1, text]
+  1: [Recommendation 2, text]
+  2: [Recommendation 3, text]
+  3: [Recommendation 4, text]

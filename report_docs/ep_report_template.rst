@@ -70,40 +70,100 @@ Summary
 .. csv-table:: Access and catheters
    :widths: 3, 10
 
-    "**Access**", "${list2bullet(vals['access'])}"
-    "**Catheters**", "${list2bullet(vals['catheters'])}"
+    "**Access**", "${list2bullet([vals['Technical_Access 1'],vals['Technical_Access 2'],vals['Technical_Access 3'],vals['Technical_Access 4']])}"
+    "**Catheters**", "${list2bullet([vals['Technical_Catheter 1'], vals['Technical_Catheter 2'],vals['Technical_Catheter 3'],vals['Technical_Catheter 4'],vals['Technical_Catheter 5']])}"
+
+				     
+.. csv-table:: Baseline Findings
+   :widths: 3, 10
+
+   "**Measurements**", "
+                       - Rhythm: ${vals['Baseline_Rhythm']}
+                       - AH: ${vals['Baseline_AH']} ms
+		       - HV: ${vals['Baseline_HV']} ms
+		       - CL: ${vals['Baseline_CL']} ms"
+   "**ParaHisian pacing**", "${vals['Baseline_Parahisian']}"
+    "**Incremental RV pace**", "
+                                - VA conduction - ${vals['Incr V Pace_VA conduction']}
+				- VAWB - ${vals['Incr V Pace_VAWB']} ms
+				- Atrial activation - ${vals['Incr V Pace_Atrial Activation']}"
+    "**Programmed RV pace**", "
+         - VA conduction - ${vals['Prog V Pace_VA conduction']}
+	 - VAERP - ${vals['Prog V Pace_VAERP']} ms
+	 - Atrial activation - ${vals['Prog V Pace_Atrial Activation']}
+	 - VERP - ${vals['Prog V Pace_VERP']} ms"
+    "**Incremental A pace**", "
+         - AVWB - ${vals['Incr A Pace_AVWB']} ms
+	 - Level of block - ${vals['Incr A Pace_Level of block']}
+	 - AH jump - ${vals['Incr A Pace_AH jump']}"
+    "**Programmed A pace**", "
+         - AH jump - ${vals['Prog A Pace_AH jump']}
+	 - SPERP - ${vals['Prog A Pace_SPERP']} ms
+	 - FPERP - ${vals['Prog A Pace_FPERP']} ms
+	 - AERP - ${vals['Prog A Pace_AERP']}
 
 
-% for m in vals['pre_measurements']:
-   <%include file="measurements.rst" args="mvals=m"/>
-% endfor
 
-% for m in vals['tachycardias']:
-   <%include file="tachycardia.rst" args="mvals=m"/>
-% endfor
+.. csv-table:: Tachycardia
+   :widths: 3, 10
+
+   "**Induced by**", "${vals['Tachycardia_Induction']}"
+    "**Measurements**", "
+         - QRS - ${vals['Tachycardia_QRS']}
+         - Cycle length - ${vals['Tachycardia_CL']} ms
+	 - AH - ${vals['Tachycardia_AH']} ms
+	 - HV - ${vals['Tachycardia_HV']} ms
+	 - VA - ${vals['Tachycardia_VA']} ms"
+    "**VA relationship**", "${vals['Tachycardia_VA relationship']}"
+    "**Atrial activation sequence**", "${vals['Tachycardia_Atrial activation']}"
+    "**Ventricular overdrive pacing**", "${vals['Tachycardia_RV overdrive']}"
+    "**Ventricular extrastimuli**", "${vals['Tachycardia_RV extra']}"
+    "**Atrial overdrive pacing**", "${vals['Tachycardia_RA overdrive']}"
+    "**Atrial extrastimuli**", "${vals['Tachycardia_RA extra']}"
+    "**Terminated by**", "${vals['Tachycardia_Termination']}"
+    "**Comment**", "${vals['Tachycardia_Comment']}"
+
+
 
 .. csv-table:: RF ablation
     :widths: 3, 10
 
-    "**Ablation catheter used**", "4 mm tip Webster Blue"
-    "**Target**", "Anatomical - at level of CS os / Slow pathway potential"
-    "**Settings**", "60 C / 30 W"
-    "**Ablation time**", "2 / 60 seconds"
-    "**Endpoint**", "No AH jump / Non inducible"
+    "**Ablation catheter used**", "${vals['Ablation_Catheter']}"
+    "**Target**", "${vals['Ablation_Target']}"
+    "**Settings**", "${vals['Ablation_Settings']}"
+    "**Ablation time**", "${vals['Ablation_Time']}"
+    "**Endpoint**", "${vals['Ablation_Endpoint']}"
 
-% for m in vals['post_measurements']:
-   <%include file="measurements.rst" args="mvals=m"/>
-% endfor
+
+.. csv-table:: Post Ablation
+   :widths: 3, 10
+
+   "**Measurements**", "
+                       - Rhythm: ${vals['Post Ablation_Rhythm']}
+                       - AH: ${vals['Post Ablation_AH']} ms
+		       - HV: ${vals['Post Ablation_HV']} ms
+		       - CL: ${vals['Post Ablation_CL']} ms"
+   "**ParaHisian pacing**", "${vals['Post Ablation_Parahisian']}"
+   "**Incremental RV pace**", "${vals['Post Ablation_Incr V Pace]}"
+    "**Programmed RV pace**", "${vals['Post Ablation_Prog V Pace']}"
+    "**Incremental A pace**", "${vals['Post Ablation_Incr A Pace']}"
+    "**Programmed A pace**", "${vals['Post Ablation_Prog A Pace']}
 
 
 
 Conclusions
 '''''''''''
-"${list2bullet(vals['conclusions'])}"
+"${list2bullet([vals['Conclusions_Conclusion 1'], vals['Conclusions_Conclusion 2'],
+                vals['Conclusions_Conclusion 3'], vals['Conclusions_Conclusion 4']])}
+
 
 Recommendations
 '''''''''''''''
-"${list2bullet(vals['recommendations'])}"
+"${list2bullet([vals['Recommendations_Recommendation 1'],
+                vals['Recommendations_Recommendation 2'],
+		vals['Recommendations_Recommendation 3'],
+		vals['Recommendations_Recommendation 4']])}"
+
 
 
 .. raw:: pdf
@@ -112,7 +172,7 @@ Recommendations
      
     
 | **Dr. Raja J. Selvaraj**
-| **Department of Cardiology**
+| **Assistant Professor of Cardiology**
 | **JIPMER**
 
       
@@ -123,8 +183,3 @@ Recommendations
     	      :width: 1in
 	      :align: middle
 
-.. footer::
-
-   EP report  Pg.###Page###
-	      
-	     

@@ -4,18 +4,27 @@
 
 import wx
 import yaml
+from mako.template import Template
 
 class Form(wx.Frame):
     def __init__(self, parent, fields_file):
         wx.Frame.__init__(self, parent, -1, size=(400, 800))
         self.panel = FormPanel(self, fields_file)
+
+        self.panel.print_button.Bind(wx.EVT_BUTTON, self.collect_values)
+        
         self.Show(True)
 
-    def collect_values(self):
+    def collect_values(self, event):
         """collect all the values from the different collapsible panels"""
         self.vals = {}
-        for pane in self.panels.panes:
+        for pane in self.panel.panes:
             self.vals.update(pane.get_values())
+
+        print self.vals
+
+        report_template = Template(filename='report_docs/ep_report_template.rst')
+        rep = report_template.render(vals = self.vals)
 
 class FormPanel(wx.Panel):
     """A Frame  with several collapsible sections that contain
@@ -37,7 +46,7 @@ class FormPanel(wx.Panel):
         self.construct_panes(fields_file)
         #self.make_pane_content(self.cp1.GetPane())
         
-        self.btn = wx.Button(self, label='Print report')
+        self.print_button = wx.Button(self, label='Print report')
 
         self._layout()
 
@@ -52,7 +61,7 @@ class FormPanel(wx.Panel):
         for cp in self.panes:
             sizer.Add(cp, 0, wx.RIGHT|wx.LEFT|wx.EXPAND, 25)
 
-        sizer.Add(self.btn, 0, wx.ALL, 25)
+        sizer.Add(self.print_button, 0, wx.ALL, 25)
 
         self.SetSizer(sizer)
 
@@ -125,10 +134,6 @@ class Pane(wx.CollapsiblePane):
                self.controls.append(wx.ComboBox(self.pane, -1, choices=control_data[2]))
                self.controls[-1].SetValue(control_data[3])
 
-       # buttons
-       # self.done_button = wx.Button(self.pane, -1, "Done")
-       # self.dummy_button = wx.Button(self.pane, -1, "Dummy")
-       # self.done_button.Bind(wx.EVT_BUTTON, self.on_done)
 
        # make widget list - keep as loop so any additional steps can be added
        widget_list = []
@@ -136,8 +141,6 @@ class Pane(wx.CollapsiblePane):
            widget_list.append(l)
            widget_list.append((c, 1, wx.EXPAND))
 
-       # widget_list += [(self.done_button, 0 ,wx.ALIGN_RIGHT|wx.ALIGN_CENTER_VERTICAL),
-       #                 (self.dummy_button, 0 ,wx.ALIGN_RIGHT|wx.ALIGN_CENTER_VERTICAL)]
        return widget_list
 
     
@@ -153,19 +156,15 @@ class Pane(wx.CollapsiblePane):
         
         self.pane.SetSizer(border)
 
-    def on_done(self, event):
-        self.get_values()
 
     def get_values(self):
         """Read all the values"""
         vals = {}
         for label, control in zip(self.labels, self.controls):
             vals[label] = control.GetValue()
-
-        print vals
-            
+        return vals
         
 if __name__ == '__main__':
     app = wx.App()
-    f = Form(None, 'form_fields.yaml')
+    f = Form(None, 'report_docs/form_fields.yaml')
     app.MainLoop()
