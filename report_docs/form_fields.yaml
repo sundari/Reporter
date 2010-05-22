@@ -48,6 +48,7 @@ Baseline:
   1: [AH, text]
   2: [HV, text]
   3: [CL, text]
+  4: [Parahisian, combo, [Nodal, Extranodal, Indeterminate], Nodal]
 
 ---
 
@@ -87,14 +88,15 @@ Tachycardia:
   2: [CL, text]
   3: [AH, text]
   4: [HV, text]
-  5: [VA relationship, text]
-  6: [Atrial activation, combo, [Concentric, Eccentric], Concentric]
-  7: [RV overdrive, text]
-  8: [RV extra, text]
-  9: [RA overdrive, text]
-  10: [RA extra, text]
-  11: [Termination, text]
-  12: [Comment, text]
+  5: [VA, text]
+  6: [VA relationship, text]
+  7: [Atrial activation, combo, [Concentric, Eccentric], Concentric]
+  8: [RV overdrive, text]
+  9: [RV extra, text]
+  10: [RA overdrive, text]
+  11: [RA extra, text]
+  12: [Termination, text]
+  13: [Comment, text]
 
 ---
 
@@ -121,10 +123,11 @@ Post Ablation:
 ---
 
 Conclusions:
-  0: [Conclusion 1, text]
-  1: [Conclusion 2, text]
-  2: [Conclusion 3, text]
-  3: [Conclusion 4, text]
+  0: [Summary, text]
+  1: [Conclusion 1, text]
+  2: [Conclusion 2, text]
+  3: [Conclusion 3, text]
+  4: [Conclusion 4, text]
 
 ---
 

@@ -21,10 +21,11 @@ class Form(wx.Frame):
         for pane in self.panel.panes:
             self.vals.update(pane.get_values())
 
-        print self.vals
+        #print self.vals
 
         report_template = Template(filename='report_docs/ep_report_template.rst')
         rep = report_template.render(vals = self.vals)
+        print rep
 
 class FormPanel(wx.Panel):
     """A Frame  with several collapsible sections that contain

@@ -45,7 +45,7 @@ Jawaharlal Institute of Postgraduate Medical Education and Research
 
 Summary
 '''''''
-"${vals['summary']}
+"${vals['Conclusions_Summary']}
 
 .. csv-table:: Clinical
    :widths: 3, 10
@@ -144,7 +144,7 @@ Summary
 		       - HV: ${vals['Post Ablation_HV']} ms
 		       - CL: ${vals['Post Ablation_CL']} ms"
    "**ParaHisian pacing**", "${vals['Post Ablation_Parahisian']}"
-   "**Incremental RV pace**", "${vals['Post Ablation_Incr V Pace]}"
+   "**Incremental RV pace**", "${vals['Post Ablation_Incr V Pace']}"
     "**Programmed RV pace**", "${vals['Post Ablation_Prog V Pace']}"
     "**Incremental A pace**", "${vals['Post Ablation_Incr A Pace']}"
     "**Programmed A pace**", "${vals['Post Ablation_Prog A Pace']}
