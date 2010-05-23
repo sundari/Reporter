@@ -22,8 +22,8 @@ an rst document. This is converted to pdf using rst2pdf"""
 # 1. Collapse other panes when one pane is opened  -------------- Done
 # 2. Bulleted or Enumerated lists must ignore empty items ------- Done
 # 3. None at top of each pdf page
-# 4. Widget for multline text
-# 5. Correctly use rst2pdf from python
+# 4. Widget for multline text ----------------------------------- Done
+# 5. Correctly use rst2pdf from python 
 # 6. Paths for all files to be calculated
 
 
@@ -38,8 +38,10 @@ class Form(wx.Frame):
         self.panel = FormPanel(self, fields_file)
 
         self.panel.print_button.Bind(wx.EVT_BUTTON, self.collect_values)
-        
+
+        self.panel.panes[0].Collapse(False)
         self.Show(True)
+        
 
     def collect_values(self, event):
         """collect all the values from the different collapsible panels"""
@@ -47,11 +49,9 @@ class Form(wx.Frame):
         for pane in self.panel.panes:
             self.vals.update(pane.get_values())
 
-        #print self.vals
-
         report_template = Template(filename='report_docs/ep_report_template.rst')
         rep = report_template.render(vals = self.vals)
-        #print rep
+
         #reportfile = 'report_docs/report.rst'
         # with open(reportfile, 'w') as fi:
         #     fi.write(rep)
