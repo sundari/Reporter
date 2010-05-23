@@ -19,15 +19,18 @@ an rst document. This is converted to pdf using rst2pdf"""
 ##
 
 # #ToDo:
-# 1. Collapse other panes when one pane is opened
-# 2. Bulleted or Enumerated lists must ignore empty items
+# 1. Collapse other panes when one pane is opened  -------------- Done
+# 2. Bulleted or Enumerated lists must ignore empty items ------- Done
 # 3. None at top of each pdf page
 # 4. Widget for multline text
+# 5. Correctly use rst2pdf from python
+# 6. Paths for all files to be calculated
 
 
 import wx
 import yaml
 from mako.template import Template
+from rst2pdf.createpdf import RstToPdf
 
 class Form(wx.Frame):
     def __init__(self, parent, fields_file):
@@ -49,10 +52,17 @@ class Form(wx.Frame):
         report_template = Template(filename='report_docs/ep_report_template.rst')
         rep = report_template.render(vals = self.vals)
         #print rep
-        reportfile = 'report_docs/report.rst'
-        with open(reportfile, 'w') as fi:
-            fi.write(rep)
+        #reportfile = 'report_docs/report.rst'
+        # with open(reportfile, 'w') as fi:
+        #     fi.write(rep)
+        self.write_pdf(rep)
 
+    def write_pdf(self, report_rst):
+        """report rst is the rst text for the report.
+        Format that using rst2pdf to create pdf"""
+        rsttopdf = RstToPdf(stylesheets=['/data/Dropbox/programming/EP_report2/report_docs/ep_report.sty'])
+        rsttopdf.createPdf(text=report_rst, output='report_docs/report.pdf')
+            
 class FormPanel(wx.Panel):
     """A Frame  with several collapsible sections that contain
     parts of the form"""

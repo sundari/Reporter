@@ -2,13 +2,13 @@
 <%
     def list2enum(lst):
         """convert items in python list to enumerated list"""
-	return ''.join(['\n\t#. ' + x for x in lst])	
+	return ''.join(['\n\t#. ' + x for x in lst if x.strip() != ''])	
 %>
 
 <%
     def list2bullet(lst):
         """convert items in python list to bullet list"""
-	return ''.join(['\n\t- ' + x for x in lst])	
+	return ''.join(['\n\t- ' + x for x in lst if x.strip() != ''])	
 %>
 
 <%
