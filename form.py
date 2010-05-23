@@ -34,7 +34,7 @@ from rst2pdf.createpdf import RstToPdf
 
 class Form(wx.Frame):
     def __init__(self, parent, fields_file):
-        wx.Frame.__init__(self, parent, -1, size=(600, 800))
+        wx.Frame.__init__(self, parent, -1, size=(600, 700))
         self.panel = FormPanel(self, fields_file)
 
         self.panel.print_button.Bind(wx.EVT_BUTTON, self.collect_values)
@@ -114,6 +114,9 @@ class FormPanel(wx.Panel):
         if not event.GetCollapsed():
             for pane in self.panes:
                 pane.Collapse(pane != active_pane)
+
+        # set focus on first control in the active pane
+        active_pane.controls[0].SetFocus()
                 
 
 class Pane(wx.CollapsiblePane):
