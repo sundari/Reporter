@@ -16,7 +16,7 @@ Demographics:
 ---
  
 Clinical:
-  0: [Presentation, text]
+  0: [Presentation, multitext]
   1: [ECG, text]
   2: [ECG during tachycardia, text]
   3: [Other investigations, text]

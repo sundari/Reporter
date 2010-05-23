@@ -169,10 +169,16 @@ class Pane(wx.CollapsiblePane):
            # control
            if control_type == 'text':
                self.controls.append(wx.TextCtrl(self.pane, -1))
+
+           elif control_type == 'multitext':
+               self.controls.append(wx.TextCtrl(self.pane, -1,
+                                                style=wx.TE_MULTILINE))
+
            elif control_type == 'spin':
                self.controls.append(wx.SpinCtrl(self.pane, -1,
                                     min=control_data[2], max=control_data[3],
                                                 initial=control_data[4]))
+
            elif control_type == 'combo':
                self.controls.append(wx.ComboBox(self.pane, -1, choices=control_data[2]))
                self.controls[-1].SetValue(control_data[3])
