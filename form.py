@@ -25,8 +25,14 @@ an rst document. This is converted to pdf using rst2pdf"""
 # 4. Widget for multline text ----------------------------------- Done
 # 5. Correctly use rst2pdf from python 
 # 6. Paths for all files to be calculated
+# 7. widget for date                              --------------- Done
+# 8. widget with combobox and one field for custom entry
+# 9. form - under ablation - rhythm
+# 10. Canned recommendations
+# 11. Modify getvalue for datepicker
+# 12. Change bullet lists to look better without indent
 
-
+import subprocess
 import wx
 import yaml
 from mako.template import Template
@@ -52,16 +58,24 @@ class Form(wx.Frame):
         report_template = Template(filename='report_docs/ep_report_template.rst')
         rep = report_template.render(vals = self.vals)
 
-        #reportfile = 'report_docs/report.rst'
-        # with open(reportfile, 'w') as fi:
-        #     fi.write(rep)
+        reportfile = 'report_docs/report.rst'
+        with open(reportfile, 'w') as fi:
+            fi.write(rep)
         self.write_pdf(rep)
 
     def write_pdf(self, report_rst):
         """report rst is the rst text for the report.
         Format that using rst2pdf to create pdf"""
-        rsttopdf = RstToPdf(stylesheets=['/data/Dropbox/programming/EP_report2/report_docs/ep_report.sty'])
-        rsttopdf.createPdf(text=report_rst, output='report_docs/report.pdf')
+        pdffile = 'report_docs/report.pdf'
+        #rsttopdf = RstToPdf(stylesheets=['/data/Dropbox/programming/EP_report2/report_docs/ep_report.sty'])
+        #rsttopdf.createPdf(text=report_rst, output=pdffile)
+        #os.system('open %s' %(pdffile))
+        
+        ### Need to process paths !!! ## TODO:
+        subprocess.Popen(['rst2pdf', '-s', '/data/Dropbox/programming/EP_report2/report_docs/ep_report.sty', '/data/Dropbox/programming/EP_report2/report_docs/report.rst'])
+        subprocess.Popen(['evince', '/data/Dropbox/programming/EP_report2/report_docs/report.pdf'])
+        
+        
             
 class FormPanel(wx.Panel):
     """A Frame  with several collapsible sections that contain
@@ -185,6 +199,9 @@ class Pane(wx.CollapsiblePane):
            elif control_type == 'combo':
                self.controls.append(wx.ComboBox(self.pane, -1, choices=control_data[2]))
                self.controls[-1].SetValue(control_data[3])
+
+           elif control_type == 'date':
+               self.controls.append(wx.DatePickerCtrl(self.pane, -1))
 
 
        # make widget list - keep as loop so any additional steps can be added

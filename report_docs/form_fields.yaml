@@ -5,21 +5,22 @@
 # spin control [label, spin, min, max, initial]
 # combo box [label, combo, [list of choices], default]		
 
+
 Demographics:
   0: [Name, text]
   1: [Age, spin, 1, 100, 35]
   2: [Sex, combo, [Male,Female], Male]
-  3: [Date of Admission, text]
-  4: [Date of Procedure, text]
+  3: [Date of Admission, date]
+  4: [Date of Procedure, date]
   5: [IP Number, text]
 
 ---
  
 Clinical:
   0: [Presentation, multitext]
-  1: [ECG, text]
-  2: [ECG during tachycardia, text]
-  3: [Other investigations, text]
+  1: [ECG, multitext]
+  2: [ECG during tachycardia, multitext]
+  3: [Other investigations, multitext]
   4: [Drugs, text]
 
 ---
@@ -35,10 +36,10 @@ Technical:
   7: [Access 2, text]
   8: [Access 3, text]
   9: [Access 4, text]
-  10: [Catheter 1, text]
-  11: [Catheter 2, text]
-  12: [Catheter 3, text]
-  13: [Catheter 4, text]
+  10: [Catheter 1, combo, ['', 5F quadripolar in HRA, 6F quadripolar in HRA], 5F quadripolar in HRA]
+  11: [Catheter 2, combo, ['', 5F quadripolar in RV,6F quadripolar in RV, 6F quadripolar in RV], 5F quadripolar in RV]
+  12: [Catheter 3, combo, ['', 5F quadripolar in His, 6F quadripolar in His, 7F quadripolar in His], 5F quadripolar in His]
+  13: [Catheter 4, combo, ['', 6F decapolar in CS, 7F decapolar in CS], 6F decapolar in CS]
   14: [Catheter 5, text]
 
 ---
@@ -48,7 +49,7 @@ Baseline:
   1: [AH, text]
   2: [HV, text]
   3: [CL, text]
-  4: [Parahisian, combo, [Nodal, Extranodal, Indeterminate], Nodal]
+  4: [Parahisian, combo, ['', Nodal, Extranodal, Indeterminate], Nodal]
 
 ---
 
@@ -69,13 +70,13 @@ Prog V Pace:
 
 Incr A Pace:
   0: [AVWB, text]
-  1: [Level of block, combo, [Nodal, Infranodal], Nodal]
-  2: [AH jump, combo, [Present, Absent], Absent]
+  1: [Level of block, combo, [NA, Nodal, Infranodal], Nodal]
+  2: [AH jump, combo, [NA, Present, Absent], Absent]
 
 ---
 
 Prog A Pace:
-  0: [AH jump, combo, [Present, Absent], Absent]
+  0: [AH jump, combo, [NA, Present, Absent], Absent]
   1: [SPERP, text]
   2: [FPERP, text]
   3: [AERP, text]
@@ -101,7 +102,7 @@ Tachycardia:
 ---
 
 Ablation:
-  0: [Catheter, combo, [4 mm tip Webster Blue], 4 mm tip Webster Blue]
+  0: [Catheter, combo, [4 mm tip Webster D curve, 4 mm tip Bard Stinger E curve, 4 mm tip Bard Stinger D curve], 4 mm tip Webster Blue]
   1: [Target, text]
   2: [Settings, text]
   3: [Time, spin , 0, 2000, 0]
@@ -132,7 +133,7 @@ Conclusions:
 ---
 
 Recommendations:
-  0: [Recommendation 1, text]
-  1: [Recommendation 2, text]
+  0: [Recommendation 1, Aspirin 150 mg OD PO for 6 weeks]
+  1: [Recommendation 2, Follow up in Cardiology OPD 184 on Wednesdays]
   2: [Recommendation 3, text]
   3: [Recommendation 4, text]

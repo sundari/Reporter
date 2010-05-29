@@ -8,7 +8,7 @@
 <%
     def list2bullet(lst):
         """convert items in python list to bullet list"""
-	return ''.join(['\n\t- ' + x for x in lst if x.strip() != ''])	
+	return ''.join(['\n\t- ' + x for x in lst if x.strip() != ''])
 %>
 
 <%
@@ -183,3 +183,10 @@ ${list2bullet([vals['Recommendations_Recommendation 1'],
     	      :width: 1in
 	      :align: middle
 
+.. header::
+
+   JIPMER EP Report
+	      
+.. footer::
+
+   Page ###Page### 
