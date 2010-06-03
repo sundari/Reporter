@@ -21,16 +21,17 @@ an rst document. This is converted to pdf using rst2pdf"""
 # #ToDo:
 # 1. Collapse other panes when one pane is opened  -------------- Done
 # 2. Bulleted or Enumerated lists must ignore empty items ------- Done
-# 3. None at top of each pdf page
+# 3. None at top of each pdf page                        -------- Done
 # 4. Widget for multline text ----------------------------------- Done
 # 5. Correctly use rst2pdf from python 
 # 6. Paths for all files to be calculated
 # 7. widget for date                              --------------- Done
 # 8. widget with combobox and one field for custom entry
 # 9. form - under ablation - rhythm
-# 10. Canned recommendations
+# 10. Canned recommendations                      --------------- Done
 # 11. Modify getvalue for datepicker
 # 12. Change bullet lists to look better without indent
+# 13. Empty cover page
 
 import subprocess
 import wx
@@ -186,6 +187,10 @@ class Pane(wx.CollapsiblePane):
            # control
            if control_type == 'text':
                self.controls.append(wx.TextCtrl(self.pane, -1))
+               try:
+                   self.controls[-1].SetValue(control_data[2])
+               except IndexError:
+                   pass # no default value
 
            elif control_type == 'multitext':
                self.controls.append(wx.TextCtrl(self.pane, -1,

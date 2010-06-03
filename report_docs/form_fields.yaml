@@ -133,7 +133,7 @@ Conclusions:
 ---
 
 Recommendations:
-  0: [Recommendation 1, Aspirin 150 mg OD PO for 6 weeks]
-  1: [Recommendation 2, Follow up in Cardiology OPD 184 on Wednesdays]
+  0: [Recommendation 1, text, Aspirin 150 mg OD PO for 6 weeks]
+  1: [Recommendation 2, text, Follow up in Cardiology OPD 184 on Wednesdays]
   2: [Recommendation 3, text]
   3: [Recommendation 4, text]
