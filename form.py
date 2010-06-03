@@ -206,7 +206,8 @@ class Pane(wx.CollapsiblePane):
                self.controls[-1].SetValue(control_data[3])
 
            elif control_type == 'date':
-               self.controls.append(wx.DatePickerCtrl(self.pane, -1))
+               self.controls.append(wx.DatePickerCtrl(self.pane, -1,
+                                    style=wx.TAB_TRAVERSAL))
 
 
        # make widget list - keep as loop so any additional steps can be added
