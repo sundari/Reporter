@@ -176,7 +176,6 @@ ${list2bullet([vals['Recommendations_Recommendation 1'],
 | **JIPMER**
 
       
-
      
 .. |jipmer| image:: jipmer_logo.png
               :height: 1in
