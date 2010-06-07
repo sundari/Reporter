@@ -29,7 +29,7 @@
 
 
 
-|jipmer|  Electrophysiology study and RF ablation
+|jipmer| Electrophysiology study and RF ablation
 =================================================
 
 Department of Cardiology
@@ -178,14 +178,10 @@ ${list2bullet([vals['Recommendations_Recommendation 1'],
       
      
 .. |jipmer| image:: jipmer_logo.png
-              :height: 1in
-    	      :width: 1in
-	      :align: middle
+                  :height: 1in
+                  :width: 1in
+	    	  :align: middle
 
-.. header::
-
-   JIPMER EP Report
-	      
 .. footer::
 
    Page ###Page### 
