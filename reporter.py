@@ -5,6 +5,7 @@ On the other hand it interfaces with the form to
 collect information to insert in a new record"""
 
 import os
+import shelve
 import UserDict
 from sqlite3 import dbapi2 as sqlite
 from buzhug import Base
@@ -51,7 +52,7 @@ class ReportManager():
     def __init__(self, db_path):
         """db_path is full path to the database"""
         self.db_path = db_path
-        self.db = DataBase(db_path)        
+        self.db = shelve.open(db_path)        
             
 
     def get_index(self, index_fields):
@@ -60,22 +61,24 @@ class ReportManager():
         return list of tuples"""
         index_field_vals = []
         for field in index_fields: 
-            index_field_vals.append([self.db[x][field] for x in range(len(self.db))])
+            index_field_vals.append([self.db[str(x)][field]
+                                     for x in range(len(self.db))])
             
         return zip(*index_field_vals)
 
+    
     def insert_record(self, record_dict):
         """Insert a record into the database.
         record_dict is a dict
         eg: {'Name': 'Raja', 'Age': 39}"""
         # find last key
         try:
-            last_key = max(self.db.keys())
+            last_key = max([int(x) for x in self.db.keys()])
         except ValueError: # empty dict
             last_key = -1
 
         # insert this record
-        self.db[last_key+1] = record_dict
+        self.db[str(last_key+1)] = record_dict
 
 
     def dump(self):
