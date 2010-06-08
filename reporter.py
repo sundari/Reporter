@@ -15,9 +15,8 @@ from buzhug import Base
 class DataBase(UserDict.DictMixin):
     """Modified from http://sebsauvage.net/python/snyppets/index.html#dbdict.
     a dictionary-like object using sqlite"""
-   
-    def __init__(self, dictName):
-        self.db_filename = "db_%s.sqlite" % dictName
+    def __init__(self, db_filename):
+        self.db_filename = db_filename
         if not os.path.isfile(self.db_filename):
             self.con = sqlite.connect(self.db_filename)
             self.con.execute("create table data (key PRIMARY KEY,value)")
@@ -46,58 +45,37 @@ class DataBase(UserDict.DictMixin):
     def keys(self):
         return [row[0] for row in self.con.execute("select key from data").fetchall()]
 
+
+    
 class ReportManager():
     def __init__(self, db_path):
         """db_path is full path to the database"""
         self.db_path = db_path
-        
-        if os.path.exists(db_path):
-            self.open_db()
-        else:
-            pass # TODO: create db without fields, then get fields and update them
-        
-        
-    def populate_db(self, fields):
-        """Populate a new empty db with fields
-        fields is a tuple of tuples with the inner tuples
-        specifying each field
-        eg: (("Name", str), ("Age", int))"""
-        fields.reverse()
-        print fields
-        for field in fields:
-            print 'field', field
-            self.db.add_field(*field)
-
-    
-    def open_db(self):
-        """open an existing database or create a new one"""
-        self.db = Base(self.db_path)
-
-        try:
-            self.db.open() # if pre-existing
-        except IOError:
-            self.db.create()
-
+        self.db = DataBase(db_path)        
             
-    def close_db(self):
-        """close the database"""
-        self.db.close()
-
 
     def get_index(self, index_fields):
         """Get data from db to create an index.
         index_fields are the fields for creating the index
         return list of tuples"""
-        indices = []
-        for field in index_fields: #terrible hack, only works for strings
-            indices.append(f[0].lstrip('-').rstrip('\n') for f in self.db.select([field]))
+        index_field_vals = []
+        for field in index_fields: 
+            index_field_vals.append([self.db[x][field] for x in range(len(self.db))])
+            
+        return zip(*index_field_vals)
 
-        return zip(*indices)
-
-    def insert_record(self, record):
+    def insert_record(self, record_dict):
         """Insert a record into the database.
-        record is a tuple of the fields."""
-        self.db.insert(*record)
+        record_dict is a dict
+        eg: {'Name': 'Raja', 'Age': 39}"""
+        # find last key
+        try:
+            last_key = max(self.db.keys())
+        except ValueError: # empty dict
+            last_key = -1
+
+        # insert this record
+        self.db[last_key+1] = record_dict
 
 
     def dump(self):
@@ -108,18 +86,13 @@ class ReportManager():
         
 def db_tests(path):
     """Create a db in the path, and test it"""
-    manager = ReportManager(path)
-    
     print 'Creating db'
-    manager.open_db()
-
-    print 'populating db'
-    manager.populate_db([("Name", str), ("Age", int), ("Sex", str)])
+    manager = ReportManager(path)
 
     print 'insert record'
-    reca = (("Raja", 37, "Male"))
-    recb = (("Rajan", 38, "Male"))
-    recc = (("Rajee", 39, "Female"))
+    reca = {'Name': 'Raja', 'Age': 38, 'Sex':'M'}
+    recb = {'Name': 'Rajan', 'Age': 39, 'Sex':'M'}
+    recc = {'Name': 'Rajee', 'Age': 48, 'Sex':'F'}
 
     manager.insert_record(reca)
     manager.insert_record(recb)
@@ -127,8 +100,6 @@ def db_tests(path):
 
     # debug
     print manager.db.keys()
-    print manager.db.field_names
-    print manager.db.select(['Name'])
     
     print 'get index'
     print manager.get_index(('Name', 'Age'))
@@ -139,3 +110,4 @@ def db_tests(path):
 
 if __name__ == '__main__':
     db_tests('/data/tmp/testdb')
+    
