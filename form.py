@@ -37,7 +37,7 @@ import subprocess
 import wx
 import yaml
 from mako.template import Template
-from rst2pdf.createpdf import RstToPdf
+#from rst2pdf.createpdf import RstToPdf
 
 class Form(wx.Frame):
     def __init__(self, parent, fields_file):
@@ -68,10 +68,7 @@ class Form(wx.Frame):
         """report rst is the rst text for the report.
         Format that using rst2pdf to create pdf"""
         pdffile = 'report_docs/report.pdf'
-        #rsttopdf = RstToPdf(stylesheets=['/data/Dropbox/programming/EP_report2/report_docs/ep_report.sty'])
-        #rsttopdf.createPdf(text=report_rst, output=pdffile)
-        #os.system('open %s' %(pdffile))
-        
+
         ### Need to process paths !!! ## TODO:
         subprocess.Popen(['rst2pdf', '-s', '/data/Dropbox/programming/EP_report2/report_docs/ep_report.sty', '/data/Dropbox/programming/EP_report2/report_docs/report.rst'])
         subprocess.Popen(['evince', '/data/Dropbox/programming/EP_report2/report_docs/report.pdf'])
