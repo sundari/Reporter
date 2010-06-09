@@ -4,56 +4,18 @@ to retrieve old records and store new ones.
 On the other hand it interfaces with the form to
 collect information to insert in a new record"""
 
-import os
+#import os
+import sys
+import wx
+from wx.lib.mixins.listctrl import ListCtrlAutoWidthMixin, ColumnSorterMixin
 import shelve
-import UserDict
-from sqlite3 import dbapi2 as sqlite
-from buzhug import Base
-
-#import os,os.path,UserDict
-
-
-class DataBase(UserDict.DictMixin):
-    """Modified from http://sebsauvage.net/python/snyppets/index.html#dbdict.
-    a dictionary-like object using sqlite"""
-    def __init__(self, db_filename):
-        self.db_filename = db_filename
-        if not os.path.isfile(self.db_filename):
-            self.con = sqlite.connect(self.db_filename)
-            self.con.execute("create table data (key PRIMARY KEY,value)")
-        else:
-            self.con = sqlite.connect(self.db_filename)
-   
-    def __getitem__(self, key):
-        row = self.con.execute("select value from data where key=?",(key,)).fetchone()
-        if not row: raise KeyError
-        return row[0]
-   
-    def __setitem__(self, key, item):
-        if self.con.execute("select key from data where key=?",(key,)).fetchone():
-            self.con.execute("update data set value=? where key=?",(item,key))
-        else:
-            self.con.execute("insert into data (key,value) values (?,?)",(key, item))
-        self.con.commit()
-              
-    def __delitem__(self, key):
-        if self.con.execute("select key from data where key=?",(key,)).fetchone():
-            self.con.execute("delete from data where key=?",(key,))
-            self.con.commit()
-        else:
-             raise KeyError
-            
-    def keys(self):
-        return [row[0] for row in self.con.execute("select key from data").fetchall()]
-
 
     
-class ReportManager():
+class ReportDatabase():
     def __init__(self, db_path):
         """db_path is full path to the database"""
         self.db_path = db_path
         self.db = shelve.open(db_path)        
-            
 
     def get_index(self, index_fields):
         """Get data from db to create an index.
@@ -64,34 +26,96 @@ class ReportManager():
             index_field_vals.append([self.db[str(x)][field]
                                      for x in range(len(self.db))])
             
-        return zip(*index_field_vals)
+        vals = zip(*index_field_vals)
+
+        record_summary = {}
+        for i in range(len(vals)):
+            record_summary[i] = vals[i]
+
+        return record_summary
 
     
     def insert_record(self, record_dict):
         """Insert a record into the database.
         record_dict is a dict
         eg: {'Name': 'Raja', 'Age': 39}"""
-        # find last key
+        # find last id
         try:
-            last_key = max([int(x) for x in self.db.keys()])
+            last_id = max([int(x) for x in self.db.ids()])
         except ValueError: # empty dict
-            last_key = -1
+            last_id = -1
 
         # insert this record
-        self.db[str(last_key+1)] = record_dict
+        self.db[str(last_id+1)] = record_dict
 
+
+    def delete_record(self, rec_id):
+        """Delete record corresponsing to record_id"""
+        del self.db[rec_id]
 
     def dump(self):
         """dump all the database records"""
-        for rec in self.db:
+        for rec in self.db: 
             print rec
+
+
             
+class AutoWidthListCtrl(wx.ListCtrl, ListCtrlAutoWidthMixin, ColumnSorterMixin):
+    def __init__(self, parent):
+        wx.ListCtrl.__init__(self, parent, -1, style=wx.LC_REPORT)
+        ListCtrlAutoWidthMixin.__init__(self)
+        ColumnSorterMixin.__init__(self, 4)
+
+    def GetListCtrl(self):
+        return self
+
         
+            
+class Reporter(wx.Frame):
+    def __init__(self, parent, id, title):
+        wx.Frame.__init__(self, parent, id, title, size=(440, 600))
+
+        self.hbox = wx.BoxSizer(wx.HORIZONTAL)
+        panel = wx.Panel(self, -1)
+
+        self.records = AutoWidthListCtrl(panel)
+        self.records.InsertColumn(0, 'Name', width=200)
+        self.records.InsertColumn(1, 'Age', width=30)
+        self.records.InsertColumn(2, 'Sex', width=60)
+        self.records.InsertColumn(3, 'Procedure Date', wx.LIST_FORMAT_RIGHT, 120)
+        self.hbox.Add(self.records, 1, wx.EXPAND)
+
+        # instantiate the db
+        self.db = ReportDatabase('/data/tmp/testdb')
+        rec_summary = self.db.get_index(('Name', 'Age', 'Sex', 'Date'))
+        self.show_records(rec_summary)
+
+        panel.SetSizer(self.hbox)
+        self.Centre()
+        self.Show(True)
+        
+    def show_records(self, records):
+        """Populate the listctrl with record summaries.
+        records is a list of tuples"""
+        self.records.itemDataMap = records
+        for i in range(len(records)):
+            rec = records[i]
+            index = self.records.InsertStringItem(sys.maxint, rec[0])
+            self.records.SetStringItem(index, 1, str(rec[1]))
+            self.records.SetStringItem(index, 2, rec[2])
+            self.records.SetStringItem(index, 3, rec[3])
+            self.records.SetItemData(index, i)
+
+
+
+
+
+            
 def db_tests(path):
     """Create a db in the path, and test it"""
     print 'Creating db'
-    manager = ReportManager(path)
-
+    manager = ReportDatabase(path)
+ 
     print 'insert record'
     reca = {'Name': 'Raja', 'Age': 38, 'Sex':'M'}
     recb = {'Name': 'Rajan', 'Age': 39, 'Sex':'M'}
@@ -102,7 +126,7 @@ def db_tests(path):
     manager.insert_record(recc)
 
     # debug
-    print manager.db.keys()
+    print manager.db.ids()
     
     print 'get index'
     print manager.get_index(('Name', 'Age'))
@@ -112,5 +136,8 @@ def db_tests(path):
 
 
 if __name__ == '__main__':
-    db_tests('/data/tmp/testdb')
+    app = wx.App()
+    rep = Reporter(None, -1, 'Records')
+    app.MainLoop()
+
     
