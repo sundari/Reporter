@@ -73,17 +73,18 @@ class AutoWidthListCtrl(wx.ListCtrl, ListCtrlAutoWidthMixin, ColumnSorterMixin):
             
 class Reporter(wx.Frame):
     def __init__(self, parent, id, title):
-        wx.Frame.__init__(self, parent, id, title, size=(440, 600))
+        wx.Frame.__init__(self, parent, id, title, size=(400, 600))
 
         self.hbox = wx.BoxSizer(wx.HORIZONTAL)
         panel = wx.Panel(self, -1)
 
         self.records = AutoWidthListCtrl(panel)
-        self.records.InsertColumn(0, 'Name', width=200)
+        self.records.InsertColumn(0, 'Name', width=120)
         self.records.InsertColumn(1, 'Age', width=30)
         self.records.InsertColumn(2, 'Sex', width=60)
-        self.records.InsertColumn(3, 'Procedure Date', wx.LIST_FORMAT_RIGHT, 120)
-        self.hbox.Add(self.records, 1, wx.EXPAND)
+        self.records.InsertColumn(3, 'Procedure Date', 100)
+
+        self.hbox.Add(self.records, 1, wx.ALL|wx.EXPAND, 10)
 
         # instantiate the db
         self.db = ReportDatabase('/data/tmp/testdb')
