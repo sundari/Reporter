@@ -75,23 +75,38 @@ class Reporter(wx.Frame):
     def __init__(self, parent, id, title):
         wx.Frame.__init__(self, parent, id, title, size=(400, 600))
 
-        self.hbox = wx.BoxSizer(wx.HORIZONTAL)
+        self.hbox1 = wx.BoxSizer(wx.HORIZONTAL)
+        self.hbox2 = wx.BoxSizer(wx.HORIZONTAL)
+        self.vbox = wx.BoxSizer(wx.VERTICAL)
+        
         panel = wx.Panel(self, -1)
 
+        # listcontrol
         self.records = AutoWidthListCtrl(panel)
         self.records.InsertColumn(0, 'Name', width=120)
         self.records.InsertColumn(1, 'Age', width=30)
         self.records.InsertColumn(2, 'Sex', width=60)
         self.records.InsertColumn(3, 'Procedure Date', 100)
 
-        self.hbox.Add(self.records, 1, wx.ALL|wx.EXPAND, 10)
+        # buttons
+        self.view_button = wx.Button(panel, -1, 'View Record')
+        self.edit_button = wx.Button(panel, -1,  'Edit Record')
+        self.new_button = wx.Button(panel, -1, 'New Record')
+
+        self.hbox1.Add(self.records, 1, wx.ALL|wx.EXPAND, 10)
+        self.hbox2.Add(self.view_button, 1, wx.ALL, 10)
+        self.hbox2.Add(self.edit_button, 1, wx.ALL, 10)
+        self.hbox2.Add(self.new_button, 1, wx.ALL, 10)
+
+        self.vbox.Add(self.hbox1, 5, wx.EXPAND, 5)
+        self.vbox.Add(self.hbox2, 1, wx.ALL, 5)
 
         # instantiate the db
         self.db = ReportDatabase('/data/tmp/testdb')
         rec_summary = self.db.get_index(('Name', 'Age', 'Sex', 'Date'))
         self.show_records(rec_summary)
 
-        panel.SetSizer(self.hbox)
+        panel.SetSizer(self.vbox)
         self.Centre()
         self.Show(True)
         
