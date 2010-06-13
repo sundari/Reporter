@@ -93,9 +93,6 @@ class Reporter(wx.Frame):
         self.edit_button = wx.Button(panel, -1,  'Edit Record')
         self.new_button = wx.Button(panel, -1, 'New Record')
 
-        self.new_button.Bind(wx.EVT_BUTTON, self.new_record)
-
-        
         self.hbox1.Add(self.record_display, 1, wx.ALL|wx.EXPAND, 10)
         self.hbox2.Add(self.view_button, 1, wx.ALL, 10)
         self.hbox2.Add(self.edit_button, 1, wx.ALL, 10)
@@ -104,6 +101,7 @@ class Reporter(wx.Frame):
         self.vbox.Add(self.hbox1, 5, wx.EXPAND, 5)
         self.vbox.Add(self.hbox2, 1, wx.ALL, 5)
 
+        self._set_bindings()
         # instantiate the db
         self.db = ReportDatabase('/data/tmp/testdb')
         self.rec_summary = self.db.get_index(
@@ -116,6 +114,17 @@ class Reporter(wx.Frame):
         panel.SetSizer(self.vbox)
         self.Centre()
         self.Show(True)
+
+
+    def _set_bindings(self):
+        """All the bindings"""
+        self.Bind(wx.EVT_CLOSE, self.on_quit)
+        self.new_button.Bind(wx.EVT_BUTTON, self.new_record)
+
+    def on_quit(self, event):
+        """Close the db properly"""
+        self.db.db.close()
+        sys.exit(0)
         
     def show_records(self, records):
         """Populate the listctrl with record summaries.
