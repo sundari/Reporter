@@ -9,7 +9,7 @@ import sys
 import wx
 from wx.lib.mixins.listctrl import ListCtrlAutoWidthMixin, ColumnSorterMixin
 import shelve
-
+from form import Form
     
 class ReportDatabase():
     def __init__(self, db_path):
@@ -41,7 +41,7 @@ class ReportDatabase():
         eg: {'Name': 'Raja', 'Age': 39}"""
         # find last id
         try:
-            last_id = max([int(x) for x in self.db.ids()])
+            last_id = max([int(x) for x in self.db.keys()])
         except ValueError: # empty dict
             last_id = -1
 
@@ -82,29 +82,36 @@ class Reporter(wx.Frame):
         panel = wx.Panel(self, -1)
 
         # listcontrol
-        self.records = AutoWidthListCtrl(panel)
-        self.records.InsertColumn(0, 'Name', width=120)
-        self.records.InsertColumn(1, 'Age', width=30)
-        self.records.InsertColumn(2, 'Sex', width=60)
-        self.records.InsertColumn(3, 'Procedure Date', 100)
+        self.record_display = AutoWidthListCtrl(panel)
+        self.record_display.InsertColumn(0, 'Name', width=120)
+        self.record_display.InsertColumn(1, 'Age', width=30)
+        self.record_display.InsertColumn(2, 'Sex', width=60)
+        self.record_display.InsertColumn(3, 'Procedure Date', 100)
 
         # buttons
         self.view_button = wx.Button(panel, -1, 'View Record')
         self.edit_button = wx.Button(panel, -1,  'Edit Record')
         self.new_button = wx.Button(panel, -1, 'New Record')
 
-        self.hbox1.Add(self.records, 1, wx.ALL|wx.EXPAND, 10)
+        self.new_button.Bind(wx.EVT_BUTTON, self.new_record)
+
+        
+        self.hbox1.Add(self.record_display, 1, wx.ALL|wx.EXPAND, 10)
         self.hbox2.Add(self.view_button, 1, wx.ALL, 10)
         self.hbox2.Add(self.edit_button, 1, wx.ALL, 10)
         self.hbox2.Add(self.new_button, 1, wx.ALL, 10)
-
+        
         self.vbox.Add(self.hbox1, 5, wx.EXPAND, 5)
         self.vbox.Add(self.hbox2, 1, wx.ALL, 5)
 
         # instantiate the db
         self.db = ReportDatabase('/data/tmp/testdb')
-        rec_summary = self.db.get_index(('Name', 'Age', 'Sex', 'Date'))
-        self.show_records(rec_summary)
+        self.rec_summary = self.db.get_index(
+            ('Demographics_Name', 'Demographics_Age',
+             'Demographics_Sex', 'Demographics_Date of Procedure'))
+
+        self.show_records(self.rec_summary)
+        self.record = {} #active record in memory
 
         panel.SetSizer(self.vbox)
         self.Centre()
@@ -113,20 +120,42 @@ class Reporter(wx.Frame):
     def show_records(self, records):
         """Populate the listctrl with record summaries.
         records is a list of tuples"""
-        self.records.itemDataMap = records
-        for i in range(len(records)):
-            rec = records[i]
-            index = self.records.InsertStringItem(sys.maxint, rec[0])
-            self.records.SetStringItem(index, 1, str(rec[1]))
-            self.records.SetStringItem(index, 2, rec[2])
-            self.records.SetStringItem(index, 3, rec[3])
-            self.records.SetItemData(index, i)
+        self.record_display.itemDataMap = records
+
+        #self.record_display.ClearAll()
+        for ind in range(len(records)):
+            rec = records[ind]
+            self.record_display_append(rec, ind)
 
 
-
-
-
+    def record_display_append(self, rec, ind):
+        """add the rec to display"""
+        index = self.record_display.InsertStringItem(sys.maxint, rec[0])
+        self.record_display.SetStringItem(index, 1, str(rec[1]))
+        self.record_display.SetStringItem(index, 2, rec[2])
+        self.record_display.SetStringItem(index, 3, rec[3])
+        self.record_display.SetItemData(index, ind)
             
+            
+    def new_record(self, event):
+        """Create a new record"""
+        f = Form(self, 'report_docs/form_fields.yaml')
+
+    def insert_record(self):
+        """Insert the record into the database.
+        Will be triggered from the form"""
+        self.db.insert_record(self.record)
+
+        #self.record_display.ClearAll()
+        #TODO: just append to rec_summary
+        rec_summary = [self.record[k] for k in ['Demographics_Name',
+                      'Demographics_Age', 'Demographics_Sex',
+                      'Demographics_Date of Procedure']]
+        self.record_display_append(rec_summary, len(self.rec_summary))
+        #self.show_records()
+        #self.db.close()
+
+        
 def db_tests(path):
     """Create a db in the path, and test it"""
     print 'Creating db'

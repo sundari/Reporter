@@ -43,9 +43,11 @@ class Form(wx.Frame):
     def __init__(self, parent, fields_file):
         wx.Frame.__init__(self, parent, -1, size=(600, 700))
         self.panel = FormPanel(self, fields_file)
+        self.parent = parent
 
         self.panel.print_button.Bind(wx.EVT_BUTTON, self.collect_values)
-
+        self.panel.insert_button.Bind(wx.EVT_BUTTON, self.insert_record)
+        
         self.panel.panes[0].Collapse(False)
         self.Show(True)
         
@@ -64,6 +66,15 @@ class Form(wx.Frame):
             fi.write(rep)
         self.write_pdf(rep)
 
+
+    def insert_record(self, event):
+        """insert the values into the database.
+        The parent must be ReportManager"""
+        self.collect_values(None)
+        self.parent.record = self.vals
+        self.parent.insert_record()
+        self.Destroy()
+        
     def write_pdf(self, report_rst):
         """report rst is the rst text for the report.
         Format that using rst2pdf to create pdf"""
@@ -94,7 +105,8 @@ class FormPanel(wx.Panel):
         #self.make_pane_content(self.cp1.GetPane())
         
         self.print_button = wx.Button(self, label='Print report')
-
+        self.insert_button = wx.Button(self, label = 'Insert record')
+        
         self._layout()
 
         self.Show(True)
@@ -102,14 +114,17 @@ class FormPanel(wx.Panel):
     def _layout(self):
         """Layout the controls using sizers"""
         sizer = wx.BoxSizer(wx.VERTICAL)
-
+        button_sizer = wx.BoxSizer(wx.HORIZONTAL)
+        
         sizer.Add(self.title, 0, wx.ALL, 25)
 
         for cp in self.panes:
             sizer.Add(cp, 0, wx.RIGHT|wx.LEFT|wx.EXPAND, 25)
 
-        sizer.Add(self.print_button, 0, wx.ALL, 25)
+        button_sizer.Add(self.print_button, 0, wx.ALL, 25)
+        button_sizer.Add(self.insert_button, 0, wx.ALL, 25)
 
+        sizer.Add(button_sizer, 0 ,wx.ALL)
         self.SetSizer(sizer)
 
     def construct_panes(self, fields_file):
@@ -235,6 +250,12 @@ class Pane(wx.CollapsiblePane):
         for label, control in zip(self.labels, self.controls):
             vals[label] = control.GetValue()
         return vals
+
+    
+    def set_values(self, vals):
+        """Set values in form from the dict vals"""
+        for label, control in zip(self.labels, self.controls):
+            control.SetValue(vals[label])
         
 if __name__ == '__main__':
     app = wx.App()
