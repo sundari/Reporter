@@ -10,7 +10,10 @@ import wx
 from wx.lib.mixins.listctrl import ListCtrlAutoWidthMixin, ColumnSorterMixin
 import shelve
 from form import Form
-    
+from mako.template import Template
+import subprocess
+
+
 class ReportDatabase():
     def __init__(self, db_path):
         """db_path is full path to the database"""
@@ -93,11 +96,13 @@ class Reporter(wx.Frame):
         #self.view_button = wx.Button(panel, -1, 'View Record')
         self.edit_button = wx.Button(panel, -1,  'Edit Record')
         self.new_button = wx.Button(panel, -1, 'New Record')
+        self.report_button = wx.Button(panel, -1, 'Make Report')
 
         self.hbox1.Add(self.record_display, 1, wx.ALL|wx.EXPAND, 10)
         #self.hbox2.Add(self.view_button, 1, wx.ALL, 10)
         self.hbox2.Add(self.edit_button, 1, wx.ALL, 10)
         self.hbox2.Add(self.new_button, 1, wx.ALL, 10)
+        self.hbox2.Add(self.report_button, 1, wx.ALL, 10)
         
         self.vbox.Add(self.hbox1, 5, wx.EXPAND, 5)
         self.vbox.Add(self.hbox2, 1, wx.ALL, 5)
@@ -122,7 +127,7 @@ class Reporter(wx.Frame):
         self.Bind(wx.EVT_CLOSE, self.on_quit)
         self.new_button.Bind(wx.EVT_BUTTON, self.new_record)
         self.edit_button.Bind(wx.EVT_BUTTON, self.load_and_edit_record)
-
+        self.report_button.Bind(wx.EVT_BUTTON, self.render_report)
 
     def load_and_edit_record(self, event):
         """Load the selected record into a form for editing"""
@@ -132,11 +137,39 @@ class Reporter(wx.Frame):
 
         id = str(self.record_display.GetItem(selected_record, 0).GetText())
 
-        print 'id is', id
-        
         rec = self.db.db[id]
         f = Form(self, 'report_docs/form_fields.yaml')
         f.set_values(rec)
+
+
+    def render_report(self, event):
+        """Render selected record as a pdf"""
+        #TODO: refactor to avoid repetition
+        selected_record = self.record_display.GetFirstSelected()
+        if selected_record == -1: # none selected
+            return
+
+        id = str(self.record_display.GetItem(selected_record, 0).GetText())
+
+        rec = self.db.db[id]
+
+        report_template = Template(filename='report_docs/ep_report_template.rst')
+        rep = report_template.render(vals = rec)
+
+        reportfile = 'report_docs/report.rst'
+        with open(reportfile, 'w') as fi:
+            fi.write(rep)
+        self.write_pdf(rep)
+    
+    def write_pdf(self, report_rst):
+        """report rst is the rst text for the report.
+        Format that using rst2pdf to create pdf"""
+        pdffile = 'report_docs/report.pdf'
+
+        ### Need to process paths !!! ## TODO:
+        subprocess.Popen(['rst2pdf', '-s', '/data/Dropbox/programming/EP_report2/report_docs/ep_report.sty', '/data/Dropbox/programming/EP_report2/report_docs/report.rst'])
+        subprocess.Popen(['evince', '/data/Dropbox/programming/EP_report2/report_docs/report.pdf'])
+        
         
     def on_quit(self, event):
         """Close the db properly"""

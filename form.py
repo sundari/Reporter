@@ -31,7 +31,10 @@ an rst document. This is converted to pdf using rst2pdf"""
 # 10. Canned recommendations                      --------------- Done
 # 11. Modify getvalue for datepicker
 # 12. Change bullet lists to look better without indent
-# 13. Empty cover page
+# 13. Empty cover page                            --------------  Done
+# 14. Edited record must replace, not become new
+# 15. Summary, conclusions are centred - check style file
+
 
 import subprocess
 import wx
