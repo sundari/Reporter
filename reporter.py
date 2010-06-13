@@ -21,7 +21,7 @@ class ReportDatabase():
         """Get data from db to create an index.
         index_fields are the fields for creating the index
         return list of tuples"""
-        index_field_vals = []
+        index_field_vals = [range(len(self.db))] # first value will be the id
         for field in index_fields: 
             index_field_vals.append([self.db[str(x)][field]
                                      for x in range(len(self.db))])
@@ -80,21 +80,22 @@ class Reporter(wx.Frame):
         self.vbox = wx.BoxSizer(wx.VERTICAL)
         
         panel = wx.Panel(self, -1)
-
+        
         # listcontrol
         self.record_display = AutoWidthListCtrl(panel)
-        self.record_display.InsertColumn(0, 'Name', width=120)
-        self.record_display.InsertColumn(1, 'Age', width=30)
-        self.record_display.InsertColumn(2, 'Sex', width=60)
-        self.record_display.InsertColumn(3, 'Procedure Date', 100)
+        self.record_display.InsertColumn(0, 'No.', width=30)
+        self.record_display.InsertColumn(1, 'Name', width=120)
+        self.record_display.InsertColumn(2, 'Age', width=30)
+        self.record_display.InsertColumn(3, 'Sex', width=60)
+        self.record_display.InsertColumn(4, 'Procedure Date', 100)
 
         # buttons
-        self.view_button = wx.Button(panel, -1, 'View Record')
+        #self.view_button = wx.Button(panel, -1, 'View Record')
         self.edit_button = wx.Button(panel, -1,  'Edit Record')
         self.new_button = wx.Button(panel, -1, 'New Record')
 
         self.hbox1.Add(self.record_display, 1, wx.ALL|wx.EXPAND, 10)
-        self.hbox2.Add(self.view_button, 1, wx.ALL, 10)
+        #self.hbox2.Add(self.view_button, 1, wx.ALL, 10)
         self.hbox2.Add(self.edit_button, 1, wx.ALL, 10)
         self.hbox2.Add(self.new_button, 1, wx.ALL, 10)
         
@@ -120,7 +121,23 @@ class Reporter(wx.Frame):
         """All the bindings"""
         self.Bind(wx.EVT_CLOSE, self.on_quit)
         self.new_button.Bind(wx.EVT_BUTTON, self.new_record)
+        self.edit_button.Bind(wx.EVT_BUTTON, self.load_and_edit_record)
 
+
+    def load_and_edit_record(self, event):
+        """Load the selected record into a form for editing"""
+        selected_record = self.record_display.GetFirstSelected()
+        if selected_record == -1: # none selected
+            return
+
+        id = str(self.record_display.GetItem(selected_record, 0).GetText())
+
+        print 'id is', id
+        
+        rec = self.db.db[id]
+        f = Form(self, 'report_docs/form_fields.yaml')
+        f.set_values(rec)
+        
     def on_quit(self, event):
         """Close the db properly"""
         self.db.db.close()
@@ -139,10 +156,11 @@ class Reporter(wx.Frame):
 
     def record_display_append(self, rec, ind):
         """add the rec to display"""
-        index = self.record_display.InsertStringItem(sys.maxint, rec[0])
-        self.record_display.SetStringItem(index, 1, str(rec[1]))
-        self.record_display.SetStringItem(index, 2, rec[2])
+        index = self.record_display.InsertStringItem(sys.maxint, str(rec[0]))
+        self.record_display.SetStringItem(index, 1, rec[1])
+        self.record_display.SetStringItem(index, 2, str(rec[2]))
         self.record_display.SetStringItem(index, 3, rec[3])
+        self.record_display.SetStringItem(index, 4, rec[4])
         self.record_display.SetItemData(index, ind)
             
             
@@ -155,12 +173,14 @@ class Reporter(wx.Frame):
         Will be triggered from the form"""
         self.db.insert_record(self.record)
 
+        new_id = len(self.rec_summary)
         #self.record_display.ClearAll()
         #TODO: just append to rec_summary
         rec_summary = [self.record[k] for k in ['Demographics_Name',
                       'Demographics_Age', 'Demographics_Sex',
                       'Demographics_Date of Procedure']]
-        self.record_display_append(rec_summary, len(self.rec_summary))
+        rec_summary = [new_id] + rec_summary
+        self.record_display_append(rec_summary, new_id)
         #self.show_records()
         #self.db.close()
 

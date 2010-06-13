@@ -58,6 +58,9 @@ class Form(wx.Frame):
         for pane in self.panel.panes:
             self.vals.update(pane.get_values())
 
+
+    def render_report(self):
+        """render the report as a pdf"""
         report_template = Template(filename='report_docs/ep_report_template.rst')
         rep = report_template.render(vals = self.vals)
 
@@ -65,7 +68,7 @@ class Form(wx.Frame):
         with open(reportfile, 'w') as fi:
             fi.write(rep)
         self.write_pdf(rep)
-
+        
 
     def insert_record(self, event):
         """insert the values into the database.
@@ -84,6 +87,18 @@ class Form(wx.Frame):
         subprocess.Popen(['rst2pdf', '-s', '/data/Dropbox/programming/EP_report2/report_docs/ep_report.sty', '/data/Dropbox/programming/EP_report2/report_docs/report.rst'])
         subprocess.Popen(['evince', '/data/Dropbox/programming/EP_report2/report_docs/report.pdf'])
         
+
+    def set_values(self, vals):
+        """Fill in the form according to the dict vals"""
+        labels = []
+        controls = []
+
+        for pane in self.panel.panes:
+            labels += pane.labels
+            controls += pane.controls
+        
+        for label, control in zip(labels, controls):
+            control.SetValue(vals[label])
         
             
 class FormPanel(wx.Panel):
@@ -252,10 +267,6 @@ class Pane(wx.CollapsiblePane):
         return vals
 
     
-    def set_values(self, vals):
-        """Set values in form from the dict vals"""
-        for label, control in zip(self.labels, self.controls):
-            control.SetValue(vals[label])
         
 if __name__ == '__main__':
     app = wx.App()
