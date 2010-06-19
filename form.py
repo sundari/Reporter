@@ -43,13 +43,21 @@ from mako.template import Template
 #from rst2pdf.createpdf import RstToPdf
 
 class Form(wx.Frame):
-    def __init__(self, parent, fields_file):
+    def __init__(self, parent, fields_file, id=-1):
+        """fields_file is the file to use to construct fields.
+        id is required when we are updating / editing.
+        id of -1 means it is a new form"""
         wx.Frame.__init__(self, parent, -1, size=(600, 700))
         self.panel = FormPanel(self, fields_file)
         self.parent = parent
+        self.id = id
 
         self.panel.print_button.Bind(wx.EVT_BUTTON, self.collect_values)
         self.panel.insert_button.Bind(wx.EVT_BUTTON, self.insert_record)
+        self.panel.update_button.Bind(wx.EVT_BUTTON, self.update_record)
+
+        if id == -1:
+            self.panel.update_button.Enable(False)
         
         self.panel.panes[0].Collapse(False)
         self.Show(True)
@@ -80,6 +88,14 @@ class Form(wx.Frame):
         self.parent.record = self.vals
         self.parent.insert_record()
         self.Destroy()
+
+    def update_record(self, event):
+        """Update the record that has been opened for editing"""
+        self.collect_values(None)
+        self.parent.record = self.vals
+        self.parent.update_record(self.id)
+        self.Destroy()
+
         
     def write_pdf(self, report_rst):
         """report rst is the rst text for the report.
@@ -123,7 +139,8 @@ class FormPanel(wx.Panel):
         #self.make_pane_content(self.cp1.GetPane())
         
         self.print_button = wx.Button(self, label='Print report')
-        self.insert_button = wx.Button(self, label = 'Insert record')
+        self.insert_button = wx.Button(self, label = 'Insert new record')
+        self.update_button = wx.Button(self, label= 'Update record')
         
         self._layout()
 
@@ -139,9 +156,10 @@ class FormPanel(wx.Panel):
         for cp in self.panes:
             sizer.Add(cp, 0, wx.RIGHT|wx.LEFT|wx.EXPAND, 25)
 
-        button_sizer.Add(self.print_button, 0, wx.ALL, 25)
         button_sizer.Add(self.insert_button, 0, wx.ALL, 25)
-
+        button_sizer.Add(self.update_button, 0, wx.ALL, 25)
+        button_sizer.Add(self.print_button, 0, wx.ALL, 25)
+        
         sizer.Add(button_sizer, 0 ,wx.ALL)
         self.SetSizer(sizer)
 

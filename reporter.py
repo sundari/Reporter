@@ -97,11 +97,13 @@ class Reporter(wx.Frame):
         self.edit_button = wx.Button(panel, -1,  'Edit Record')
         self.new_button = wx.Button(panel, -1, 'New Record')
         self.report_button = wx.Button(panel, -1, 'Make Report')
-
+        self.update_button = wx.Button(panel, -1, 'Update Report')
+        
         self.hbox1.Add(self.record_display, 1, wx.ALL|wx.EXPAND, 10)
         #self.hbox2.Add(self.view_button, 1, wx.ALL, 10)
-        self.hbox2.Add(self.edit_button, 1, wx.ALL, 10)
         self.hbox2.Add(self.new_button, 1, wx.ALL, 10)
+        self.hbox2.Add(self.edit_button, 1, wx.ALL, 10)
+        self.hbox2.Add(self.update_button, 1, wx.ALL, 10)
         self.hbox2.Add(self.report_button, 1, wx.ALL, 10)
         
         self.vbox.Add(self.hbox1, 5, wx.EXPAND, 5)
@@ -128,6 +130,7 @@ class Reporter(wx.Frame):
         self.new_button.Bind(wx.EVT_BUTTON, self.new_record)
         self.edit_button.Bind(wx.EVT_BUTTON, self.load_and_edit_record)
         self.report_button.Bind(wx.EVT_BUTTON, self.render_report)
+        self.update_button.Bind(wx.EVT_BUTTON, self.update_record)
 
     def load_and_edit_record(self, event):
         """Load the selected record into a form for editing"""
@@ -135,9 +138,9 @@ class Reporter(wx.Frame):
         if selected_record == -1: # none selected
             return
 
-        id = str(self.record_display.GetItem(selected_record, 0).GetText())
+        self.edit_id = str(self.record_display.GetItem(selected_record, 0).GetText())
 
-        rec = self.db.db[id]
+        rec = self.db.db[self.edit_id]
         f = Form(self, 'report_docs/form_fields.yaml')
         f.set_values(rec)
 
@@ -217,6 +220,10 @@ class Reporter(wx.Frame):
         #self.show_records()
         #self.db.close()
 
+    def update_record(self, id):
+        """Update the record with given id"""
+        self.db.db[id] = self.record
+        #TODO: update the record display
         
 def db_tests(path):
     """Create a db in the path, and test it"""
