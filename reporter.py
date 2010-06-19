@@ -13,6 +13,12 @@ from form import Form
 from mako.template import Template
 import subprocess
 
+#################
+ID_NEW = wx.NewId()
+ID_EDIT = wx.NewId()
+ID_PREF = wx.NewId()
+ID_QUIT = wx.NewId()
+
 
 class ReportDatabase():
     def __init__(self, db_path):
@@ -109,6 +115,8 @@ class Reporter(wx.Frame):
         self.vbox.Add(self.hbox1, 5, wx.EXPAND, 5)
         self.vbox.Add(self.hbox2, 1, wx.ALL, 5)
 
+        self._build_menubar()
+        
         self._set_bindings()
         # instantiate the db
         self.db = ReportDatabase('/data/tmp/testdb')
@@ -123,6 +131,22 @@ class Reporter(wx.Frame):
         self.Centre()
         self.Show(True)
 
+    def _build_menubar(self):
+        """Build the menu bar"""
+        self.MenuBar = wx.MenuBar()
+
+        file_menu = wx.Menu()
+        file_menu.Append(ID_NEW, "&New Record","Create a new record")
+        file_menu.Append(ID_EDIT, "&Edit Record", "Edit an existing record")
+        file_menu.Append(ID_QUIT, "&Quit","Quit the program")
+   
+        edit_menu = wx.Menu()
+        edit_menu.Append(ID_PREF, "Preferences", "Edit preferences")
+        
+        self.MenuBar.Append(file_menu, "&File")
+        self.MenuBar.Append(edit_menu, "&Edit")
+        
+        self.SetMenuBar(self.MenuBar)
 
     def _set_bindings(self):
         """All the bindings"""
@@ -130,6 +154,11 @@ class Reporter(wx.Frame):
         self.new_button.Bind(wx.EVT_BUTTON, self.new_record)
         self.edit_button.Bind(wx.EVT_BUTTON, self.load_and_edit_record)
         self.report_button.Bind(wx.EVT_BUTTON, self.render_report)
+
+        self.Bind(wx.EVT_MENU, self.new_record, id=ID_NEW)
+        self.Bind(wx.EVT_MENU, self.load_and_edit_record, id=ID_EDIT)
+        self.Bind(wx.EVT_MENU, self.on_quit, id=ID_QUIT)
+        
         #self.update_button.Bind(wx.EVT_BUTTON, self.update_record)
 
     def load_and_edit_record(self, event):
