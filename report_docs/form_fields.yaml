@@ -11,7 +11,7 @@ Demographics:
   1: [Age, spin, 1, 100, 35]
   2: [Sex, combo, [Male,Female], Male]
   3: [Date of Admission, text]
-  4: [Date of Procedure, text]
+  4: [Date of Procedure (dd-mm-yyyy), text]
   5: [IP Number, text]
 
 ---

@@ -207,6 +207,20 @@ class Pane(wx.CollapsiblePane):
         self.panel.on_pane_changed(event)
         self.panel.Layout()
 
+
+    def without_parentheses(self, label_str):
+        """Remove terminal text within parentheses
+        >>> without_parentheses(self, "test(within)")
+            "test"
+        """
+        opening_brace_pos = label_str.find('(')
+
+        if opening_brace_pos == -1:
+            return label_str
+        
+        return label_str[:opening_brace_pos].strip()
+
+    
     def make_content(self):
        """Put in the contents of the given pane based on the data.
        Data is a dict with index as keys and a list describing the
@@ -226,7 +240,8 @@ class Pane(wx.CollapsiblePane):
            control_type = control_data[1]
 
            # keep a list of labels
-           self.labels.append(self.name + '_' + label)
+           self.labels.append(self.name + '_' +
+                              self.without_parentheses(label))
 
            # statictext label
            self.control_labels.append(wx.StaticText(self.pane, -1, label,
