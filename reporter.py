@@ -16,6 +16,7 @@ import subprocess
 #################
 ID_NEW = wx.NewId()
 ID_EDIT = wx.NewId()
+ID_REMOVE = wx.NewId()
 ID_PREF = wx.NewId()
 ID_QUIT = wx.NewId()
 
@@ -31,9 +32,11 @@ class ReportDatabase():
         index_fields are the fields for creating the index
         return list of tuples"""
         index_field_vals = [range(len(self.db))] # first value will be the id
+        # getting pretty hackish
         for field in index_fields: 
             index_field_vals.append([self.db[str(x)][field]
-                                     for x in range(len(self.db))])
+                                     for x in range(self.get_max_id())
+                                     if str(x) in self.db.keys()])
             
         vals = zip(*index_field_vals)
 
@@ -42,6 +45,11 @@ class ReportDatabase():
             record_summary[i] = vals[i]
 
         return record_summary
+
+
+    def get_max_id(self):
+        """Get the maximum id"""
+        return max([int(x) for x in self.db.keys()])
 
     
     def insert_record(self, record_dict):
@@ -82,7 +90,7 @@ class AutoWidthListCtrl(wx.ListCtrl, ListCtrlAutoWidthMixin, ColumnSorterMixin):
             
 class Reporter(wx.Frame):
     def __init__(self, parent, id, title):
-        wx.Frame.__init__(self, parent, id, title, size=(400, 600))
+        wx.Frame.__init__(self, parent, id, title, size=(460, 600))
 
         self.hbox1 = wx.BoxSizer(wx.HORIZONTAL)
         self.hbox2 = wx.BoxSizer(wx.HORIZONTAL)
@@ -102,15 +110,17 @@ class Reporter(wx.Frame):
         #self.view_button = wx.Button(panel, -1, 'View Record')
         self.edit_button = wx.Button(panel, -1,  'Edit Record')
         self.new_button = wx.Button(panel, -1, 'New Record')
+        self.remove_button = wx.Button(panel, -1, 'Remove Record')
         self.report_button = wx.Button(panel, -1, 'Make Report')
         #self.update_button = wx.Button(panel, -1, 'Update Report')
         
         self.hbox1.Add(self.record_display, 1, wx.ALL|wx.EXPAND, 10)
         #self.hbox2.Add(self.view_button, 1, wx.ALL, 10)
-        self.hbox2.Add(self.new_button, 1, wx.ALL, 10)
-        self.hbox2.Add(self.edit_button, 1, wx.ALL, 10)
+        self.hbox2.Add(self.new_button, 1, wx.ALL, 5)
+        self.hbox2.Add(self.edit_button, 1, wx.ALL, 5)
+        self.hbox2.Add(self.remove_button, 1, wx.ALL, 5)
         #self.hbox2.Add(self.update_button, 1, wx.ALL, 10)
-        self.hbox2.Add(self.report_button, 1, wx.ALL, 10)
+        self.hbox2.Add(self.report_button, 1, wx.ALL, 5)
         
         self.vbox.Add(self.hbox1, 5, wx.EXPAND, 5)
         self.vbox.Add(self.hbox2, 1, wx.ALL, 5)
@@ -138,6 +148,7 @@ class Reporter(wx.Frame):
         file_menu = wx.Menu()
         file_menu.Append(ID_NEW, "&New Record","Create a new record")
         file_menu.Append(ID_EDIT, "&Edit Record", "Edit an existing record")
+        file_menu.Append(ID_REMOVE, "&Remove Record", "Remove existing record")
         file_menu.Append(ID_QUIT, "&Quit","Quit the program")
    
         edit_menu = wx.Menu()
@@ -153,6 +164,7 @@ class Reporter(wx.Frame):
         self.Bind(wx.EVT_CLOSE, self.on_quit)
         self.new_button.Bind(wx.EVT_BUTTON, self.new_record)
         self.edit_button.Bind(wx.EVT_BUTTON, self.load_and_edit_record)
+        self.remove_button.Bind(wx.EVT_BUTTON, self.remove_record)
         self.report_button.Bind(wx.EVT_BUTTON, self.render_report)
 
         self.Bind(wx.EVT_MENU, self.new_record, id=ID_NEW)
@@ -173,6 +185,15 @@ class Reporter(wx.Frame):
         f = Form(self, 'report_docs/form_fields.yaml', self.edit_id)
         f.set_values(rec)
 
+
+    def remove_record(self, event):
+        """Remove selected record from the database"""
+        selected_record = self.record_display.GetFirstSelected()
+        if selected_record == -1: # none selected
+            return
+        
+        self.db.delete_record(str(selected_record))
+        
 
     def render_report(self, event):
         """Render selected record as a pdf"""
