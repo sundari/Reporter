@@ -44,7 +44,8 @@ class ReportDatabase():
     def get_index(self):
         """Get data from db to create an index.
         index_fields are the fields for creating the index
-        return list of tuples"""
+        return a dictionary where the unique id for each record
+        is used as a key for the record index values"""
         index_field_vals = []
         
         for field in self.index_keys:
@@ -52,7 +53,13 @@ class ReportDatabase():
 
         vals = zip(*index_field_vals)
 
-        return vals
+        #return vals
+        index_dict = {}
+        for i, rec in enumerate(vals):
+            #rec_key = str(''.join([str(x) for x in rec]))
+            index_dict[i] = rec
+
+        return index_dict
     
     def insert_record(self, record):
         """Insert a record into the database.
@@ -189,6 +196,7 @@ class Reporter(wx.Frame):
         
         #self.update_button.Bind(wx.EVT_BUTTON, self.update_record)
 
+        
     def load_and_edit_record(self, event):
         """Load the selected record into a form for editing"""
         selected_record = self.record_display.GetFirstSelected()
@@ -212,9 +220,13 @@ class Reporter(wx.Frame):
         if selected_record == -1: # none selected
             return
 
-        db_key = self.rec_summary[selected_record][-1]
-        #self.db.delete_record()
-        #self.record_display.DeleteItem(2)
+        # TODO: separate function to get key
+        selected_record_key = str(''.join([self.record_display.GetItem(
+                    selected_record, x).GetText()
+                    for x in range(len(self.index_keys))]))
+
+        self.db.delete_record(selected_record_key)
+
 
     def render_report(self, event):
         """Render selected record as a pdf"""
@@ -253,24 +265,25 @@ class Reporter(wx.Frame):
         
         sys.exit(0)
         
-    def show_records(self, records):
+    def show_records(self, rec_summary):
         """Populate the listctrl with record summaries.
         records is a list of tuples"""
-        self.record_display.itemDataMap = records
+        # for sorting we use the full db
+        self.record_display.itemDataMap = rec_summary
 
         #self.record_display.ClearAll()
-        for rec in records:
-            self.record_display_append(rec)
+        for key in rec_summary:
+            self.record_display_append(rec_summary[key], key)
 
 
-    def record_display_append(self, rec):
+    def record_display_append(self, rec, key):
         """add the rec to display"""
         index = self.record_display.InsertStringItem(sys.maxint, rec[0])
         self.record_display.SetStringItem(index, 1, str(rec[1]))
         self.record_display.SetStringItem(index, 2, rec[2])
         self.record_display.SetStringItem(index, 3, rec[3])
         #self.record_display.SetStringItem(index, 4, rec[4])
-        self.record_display.SetItemData(index, index)
+        self.record_display.SetItemData(index, key) 
             
             
     def new_record(self, event):
